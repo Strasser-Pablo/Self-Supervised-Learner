@@ -202,7 +202,7 @@ def cli_main():
         "--technique", default=None, type=str, help="SIMCLR, SIMSIAM or CLASSIFIER"
     )
     parser.add_argument(
-        "--save_freq", default=-1, type=int, help="Number of epochs between checkpoints"
+        "--save_freq", default=0, type=int, help="Number of epochs between checkpoints"
     )
     parser.add_argument(
         "--seed", default=1729, type=int, help="random seed for run for reproducibility"
@@ -261,20 +261,18 @@ def cli_main():
     ckpt_callback = ModelCheckpoint(
         monitor="train_loss",
         dirpath=os.path.join(os.getcwd(), "models"),
-        period=args.save_freq,
+        every_n_epochs=args.save_freq,
         filename="model-{epoch:02d}-{train_loss:.2f}",
     )
     cbs.append(ckpt_callback)
 
     trainer = pl.Trainer(
         gpus=args.gpus,
-        max_epochs=args.epochs,
-        progress_bar_refresh_rate=20,
+        max_epochs=args.epochs, 
         callbacks=cbs,
-        distributed_backend=f"{backend}" if args.gpus > 1 else None,
+        num_nodes= args.gpus,
         sync_batchnorm=True if args.gpus > 1 else False,
-        logger=wandb_logger,
-        enable_pl_optimizer=True,
+        logger=wandb_logger
     )
     trainer.fit(model)
 

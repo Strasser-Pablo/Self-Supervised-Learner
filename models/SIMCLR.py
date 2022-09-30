@@ -12,6 +12,7 @@ from torch import nn
 from torchvision.datasets import ImageFolder
 
 import pytorch_lightning as pl
+import pl_bolts
 from pl_bolts.models.self_supervised import SimCLR
 from pl_bolts.models.self_supervised.simclr.simclr_module import Projection
 
